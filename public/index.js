@@ -27,8 +27,8 @@ function getUsers() {
     ).then ( (res)=>{
         return res.json()
     }).then ((data)=>{
-        console.log(data)
         userList = data
+        console.log(userList)
         listar(userList)
    }
    )
@@ -59,7 +59,6 @@ function incluir() {
                 })
             }
         ).then ( (res)=>{
-            console.log(res)
             getUsers();
         })
 
@@ -73,7 +72,8 @@ function incluir() {
     } 
 }
 
-function listar(array){
+function listar(array, e){
+    console.log(e)
     let tabela = document.querySelector("#tabela")
     tabela.innerHTML = ""
     confirme.textContent = ""
@@ -88,6 +88,8 @@ function listar(array){
         let colunaEmail = linha.insertCell();
         let colunaEditar = linha.insertCell();
         let colunaApagar = linha.insertCell();
+
+        console.log(array[i].id)
         
         colunaId.innerHTML = array[i].id;
         colunaNome.textContent = array[i].nome;
@@ -96,7 +98,7 @@ function listar(array){
         let imagemEdit = document.createElement('img')
         imagemEdit.src = './assests/edit.svg'
         colunaEditar.appendChild (imagemEdit)
-        imagemEdit.setAttribute("onclick", `abrirPopup(${i+1})`)
+        imagemEdit.setAttribute("onclick", `abrirPopup(${array[i].id})`)
 
         let imagemApagar = document.createElement('img')
         imagemApagar.src = './assests/excluir.png'
@@ -104,7 +106,8 @@ function listar(array){
         imagemApagar.setAttribute("onclick", "apagar("+array[i].id+")")
 
         let btnConfirmar = document.querySelector("#botaoEditar")
-        btnConfirmar.setAttribute("onclick",  "editar("+array[i].id+")")
+        // btnConfirmar.setAttribute("onclick",  "editar("+array[i].id+")")
+        btnConfirmar.setAttribute("onclick",  `editar(${i})`)
 
          //Popup visualização:
          colunaNome.setAttribute("onclick", "mostrar("+JSON.stringify(array)+", "+array[i].id+")")
@@ -130,6 +133,7 @@ function editar(id) {
     let nomeEdit = document.querySelector ("#nomeEdit").value
     let emailEdit = document.querySelector ("#valorEdit").value
 
+    console.log(`INDEX ED: ${id}`)
     //PUT:
     fetch(`http://localhost:8000/usuarios/${id}`,
         {
