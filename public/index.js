@@ -1,20 +1,43 @@
 const btnIncluir = document.querySelector ("#botaoIncluir")  
 const btnListar = document.querySelector("#botaoListar")
+const btnEditar = document.querySelector("#botaoEditar")
 const confirme = document.querySelector ("h3") 
 const confirme2 = document.querySelector ("h4") 
 
-let id = 1
-let produtos = []
+let id = 1;
+let userList;
+let produtos = [];
+let produto = {};
+let indexToUpdate;
+
+console.log(`index=${indexToUpdate}`)
 
 btnIncluir.addEventListener ("click", incluir)
 btnListar.addEventListener ("click", function(){
-    listar(produtos);
+    getUsers();
+})
+btnEditar.addEventListener ("click", function(){
+    editar(indexToUpdate);
 })
 
-function incluir() {
-    //Objeto:
-    let produto = {}
+function getUsers() {
+    //GET:
+    fetch('http://localhost:8000/usuarios',
+    {
+        method:'GET',
+        headers: { 'Content-Type': 'application/json'}
+    }
+    ).then ( (res)=>{
+        return res.json()
+    }).then ((data)=>{
+        console.log(data)
+        userList = data
+        listar(userList)
+   }
+   )
+}
 
+function incluir() {
     //Guardando valores de entrada:
     const nome = document.querySelector("#nome").value;
     const email = document.querySelector("#email").value;
@@ -22,14 +45,14 @@ function incluir() {
     //Verificação de dados:
     try {
         if(nome == "") {
-            throw `Falha no cadastro do produto, preencha o nome`
+            throw `Falha no cadastro do usuário, preencha o nome`
         }
         if(email == "") {
-            throw `Falha no cadastro do produto, preencha o valor`
+            throw `Falha no cadastro do e-mail, preencha o e-mail`
         }
 
         //API:
-        
+
         //POST:
         fetch('http://localhost:8000/usuarios',
             {
@@ -42,17 +65,8 @@ function incluir() {
             }
         ).then ( (res)=>{
             console.log(res)
+            getUsers();
         })
-
-
-        //Objeto:
-        produto.id = id,
-        produto.nome = nome,
-        produto.email = email,
-
-        //Array:
-        produtos.push(produto)
-        produto.id = id++;
 
         //Impressão:
         confirme.textContent = `Usuário ${produto.nome} cadastrado com sucesso!`
@@ -69,14 +83,16 @@ function incluir() {
 }
 
 function listar(array){
+    
     let tabela = document.querySelector("#tabela")
     tabela.innerHTML = ""
     confirme.textContent = ""
 
+    console.log(array)
+
     // Inserindo valores na tabela:
     for (i=0; i < array.length; i++) {
         let linha = tabela.insertRow();
-
         let colunaId = linha.insertCell();
         let colunaNome = linha.insertCell();
         let colunaEmail = linha.insertCell();
@@ -90,7 +106,7 @@ function listar(array){
         let imagemEdit = document.createElement('img')
         imagemEdit.src = './assests/edit.svg'
         colunaEditar.appendChild (imagemEdit)
-        imagemEdit.setAttribute("onclick", "abrirPopup()")
+        imagemEdit.setAttribute("onclick", `abrirPopup(${i+1})`)
 
         let imagemApagar = document.createElement('img')
         imagemApagar.src = './assests/excluir.png'
@@ -102,8 +118,6 @@ function listar(array){
 
          //Popup visualização:
          colunaNome.setAttribute("onclick", "mostrar("+JSON.stringify(array)+", "+array[i].id+")")
-         let btnFechar2 = document.querySelector ("#fechar2")
-         btnFechar2.setAttribute ("onclick", "fecharpopup2()")
     }
 
     //Popup edição:
@@ -111,26 +125,13 @@ function listar(array){
     btnFechar.addEventListener ("click", fecharPopup)
 }
 
-function mostrar(produtos, id){
-    const btnAbrir = document.querySelector("#popupInfos")
-    btnAbrir.style.display = 'block'
-
-    const infoID = document.querySelector("#infoID")
-    const infoNome = document.querySelector("#infoNome")
-    const infoValor = document.querySelector("#infoValor")
-
-    for (i=0; i < produtos.length; i++) {
-        if(produtos[i].id == id){ 
-            infoID.textContent = produtos[i].id
-            infoNome.textContent = produtos[i].nome
-            infoValor.textContent = produtos[i].email
-        }
-    }
-}
-
-function abrirPopup (){
+function abrirPopup (index){
     const btnAbrir = document.querySelector("#popup")
     btnAbrir.style.display = 'block'
+    indexToUpdate = index;
+    // btnEditar.addEventListener ("click", editar(indexToUpdate))
+    console.log(`index@@@=${indexToUpdate}`)
+    
 }
 
 function fecharPopup(){
@@ -139,37 +140,42 @@ function fecharPopup(){
     confirme2.textContent = ``
 }
 
-function fecharpopup2(){
-    btnFechar = document.querySelector ("#popupInfos")
-    btnFechar.style.display = 'none'
-    confirme2.textContent = ``
-}
-
 function editar(id) {
     let nomeEdit = document.querySelector ("#nomeEdit").value
-    let valorEdit = document.querySelector ("#valorEdit").value
+    let emailEdit = document.querySelector ("#valorEdit").value
+    console.log(id)
 
-    for (i=0; i < produtos.length; i++) {
-        if(produtos[i].id == id){  
-            produtos[i].nome = nomeEdit;
-            produtos[i].valor = valorEdit;
-            confirme2.textContent = `Dados alterados com sucesso, atualize a tabela clicando em "Listar produtos"`
-            confirme2.style.color = "#00ff00"
+    //API:
+
+    //PUT:
+    fetch(`http://localhost:8000/usuarios/${id}`,
+        {
+            method:'PUT',
+            headers: { 'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                nome: `${nomeEdit}`,
+                email: `${emailEdit}`
+            })
         }
-    } 
-    // resetando display após inserção
+    ).then ( (res)=>{
+        getUsers();
+    })
+
     document.querySelector ("#nomeEdit").value = ""
     document.querySelector ("#valorEdit").value = ""
     fecharPopup();
-    listar(produtos);
 }   
 
 function apagar(id) {
-    produtos.forEach((arrayItem,index) => {
-        if(arrayItem.id == id ){
-            produtos.splice(index, 1); 
-        }
-    })
-    listar(produtos);
+ //API:
+        //DELETE:
+        fetch(`http://localhost:8000/usuarios/${id}`,
+            {
+                method:'DELETE',
+                headers: { 'Content-Type': 'application/json'}
+            }
+        ).then ( (res)=>{
+            getUsers();
+        })
+    listar(userList);
 }
-
