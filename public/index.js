@@ -2,12 +2,9 @@ const btnIncluir = document.querySelector ("#botaoIncluir")
 const btnListar = document.querySelector("#botaoListar")
 const btnEditar = document.querySelector("#botaoEditar")
 const confirme = document.querySelector ("h3") 
-const confirme2 = document.querySelector ("h4") 
 
 let id = 1;
 let userList;
-let produtos = [];
-let produto = {};
 let indexToUpdate;
 
 console.log(`index=${indexToUpdate}`)
@@ -51,8 +48,6 @@ function incluir() {
             throw `Falha no cadastro do e-mail, preencha o e-mail`
         }
 
-        //API:
-
         //POST:
         fetch('http://localhost:8000/usuarios',
             {
@@ -68,10 +63,6 @@ function incluir() {
             getUsers();
         })
 
-        //Impressão:
-        confirme.textContent = `Usuário ${produto.nome} cadastrado com sucesso!`
-        confirme.style.color = "#00ff00"
-
         //resetando display após inserção
         document.querySelector("#nome").value = ""
         document.querySelector("#email").value = ""
@@ -83,7 +74,6 @@ function incluir() {
 }
 
 function listar(array){
-    
     let tabela = document.querySelector("#tabela")
     tabela.innerHTML = ""
     confirme.textContent = ""
@@ -129,23 +119,16 @@ function abrirPopup (index){
     const btnAbrir = document.querySelector("#popup")
     btnAbrir.style.display = 'block'
     indexToUpdate = index;
-    // btnEditar.addEventListener ("click", editar(indexToUpdate))
-    console.log(`index@@@=${indexToUpdate}`)
-    
 }
 
 function fecharPopup(){
     btnFechar = document.querySelector ("#popup")
     btnFechar.style.display = 'none'
-    confirme2.textContent = ``
 }
 
 function editar(id) {
     let nomeEdit = document.querySelector ("#nomeEdit").value
     let emailEdit = document.querySelector ("#valorEdit").value
-    console.log(id)
-
-    //API:
 
     //PUT:
     fetch(`http://localhost:8000/usuarios/${id}`,
@@ -167,15 +150,14 @@ function editar(id) {
 }   
 
 function apagar(id) {
- //API:
-        //DELETE:
-        fetch(`http://localhost:8000/usuarios/${id}`,
-            {
-                method:'DELETE',
-                headers: { 'Content-Type': 'application/json'}
-            }
-        ).then ( (res)=>{
-            getUsers();
-        })
+    //DELETE:
+    fetch(`http://localhost:8000/usuarios/${id}`,
+        {
+            method:'DELETE',
+            headers: { 'Content-Type': 'application/json'}
+        }
+    ).then ( (res)=>{
+        getUsers();
+    })
     listar(userList);
 }
