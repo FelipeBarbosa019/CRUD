@@ -1,4 +1,4 @@
-const { users, writeFile } = require("../repository/data")
+const { users, writeFile } = require("../dataBase/data")
 
 async function deleteUser (req, res) {
     const id = req.params.id

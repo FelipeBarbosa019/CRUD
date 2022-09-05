@@ -1,5 +1,5 @@
 
-const { users, writeFile } = require ("../repository/data.js")
+const { users, writeFile } = require ("../dataBase/data")
 const verification = require("./verification")
 
 async function postUser (req, res) {

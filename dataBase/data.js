@@ -1,9 +1,9 @@
 const fs = require("fs")
 let users = []
 
-readFile();
+read();
 
-function readFile (){
+function read (){
     const fileJson = fs.readFileSync (__dirname + "/data.json")
     users = JSON.parse(fileJson) 
 }

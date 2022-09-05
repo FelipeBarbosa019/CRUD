@@ -1,4 +1,4 @@
-const { users, writeFile } = require("../repository/data")
+const { users, writeFile } = require("../dataBase/data")
 const verification = require("./verification");
 
 async function putUser (req, res){
