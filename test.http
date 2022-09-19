@@ -1,0 +1,24 @@
+GET http://localhost:8000/usuarios 
+
+###
+
+POST http://localhost:8000/usuarios 
+Content-Type: application/json
+
+{
+    "nome": "Kenji Alpha",
+    "email": "kenji@gmail.com"
+}
+
+###
+
+PUT http://localhost:8000/usuarios/1 
+Content-Type: application/json
+
+{
+    "email": "felipefb2@gmail.com"
+}
+
+###
+
+DELETE  http://localhost:8000/usuarios/2
